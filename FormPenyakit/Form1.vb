@@ -29,6 +29,7 @@ Public Class FormPenyakit
         tbPenyakit.Text = ""
         tbTotal.Text = ""
         tbKode.Focus()
+        AddListOfData()
     End Sub
 
     Private Sub btSimpan_Click(sender As Object, e As EventArgs) Handles btSimpan.Click
@@ -87,7 +88,9 @@ Public Class FormPenyakit
         listICD.Add("K04.1")
         listICD.Add("N40.0")
         For Each item As String In listICD
-            cbICD.Items.Add(item)
+            If Not cbICD.Items.Contains(item) Then
+                cbICD.Items.Add(item)
+            End If
         Next
     End Sub
 End Class
