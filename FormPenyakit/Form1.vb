@@ -7,41 +7,9 @@ Public Class FormPenyakit
     Dim listICD As New List(Of String)()
 
     Private Sub FormPenyakit_Load(sender As Object, e As EventArgs) Handles MyBase.Load
-
-        listPenyakit.Add("Congestive Heart Failure")
-        listPenyakit.Add("Necrosis of Pulp")
-        listPenyakit.Add("Hyperplasia of Prostate")
-
-        listICD.Add("150.0")
-        listICD.Add("K04.1")
-        listICD.Add("N40.0")
-        For Each item As String In listICD
-            cbICD.Items.Add(item)
-        Next
-
-        myConnectionString = "server=127.0.0.1;" _
-            & "uid=mmuslimabdulj;" _
-            & "pwd=Babang_030;" _
-            & "database=visual_basic"
-
-        Try
-            conn.ConnectionString = myConnectionString
-            conn.Open()
-        Catch ex As MySql.Data.MySqlClient.MySqlException
-            MessageBox.Show(ex.Message)
-        End Try
-
-        ' Mengambil data dari database dan menampilkannya di DataGridView
-        Dim sql As String = "SELECT * FROM penyakitbesar"
-        Dim command As New MySqlCommand(sql, conn)
-
-        Dim adapter As New MySqlDataAdapter(command)
-        Dim dataset As New DataSet()
-
-        adapter.Fill(dataset, "DGVPenyakit")
-
-        DGVPenyakit.DataSource = dataset.Tables("DGVPenyakit")
-
+        Database()
+        AddListOfData()
+        RefreshDGV()
     End Sub
 
     Private Sub cbICD_SelectedIndexChanged(sender As Object, e As EventArgs) Handles cbICD.SelectedIndexChanged
@@ -60,7 +28,6 @@ Public Class FormPenyakit
         cbICD.Items.Clear()
         tbPenyakit.Text = ""
         tbTotal.Text = ""
-
         tbKode.Focus()
     End Sub
 
@@ -71,39 +38,56 @@ Public Class FormPenyakit
         command.Parameters.AddWithValue("@ICD", cbICD.Text)
         command.Parameters.AddWithValue("@Penyakit", tbPenyakit.Text)
         command.Parameters.AddWithValue("@Total", tbTotal.Text)
-
         command.ExecuteNonQuery()
-
         RefreshDGV()
     End Sub
 
     Private Sub btHapus_Click(sender As Object, e As EventArgs) Handles btHapus.Click
         Dim sql As String = "DELETE FROM penyakitbesar"
         Dim command As New MySqlCommand(sql, conn)
-
         command.ExecuteNonQuery()
-
         RefreshDGV()
+    End Sub
+
+    Private Sub btTutup_Click(sender As Object, e As EventArgs) Handles btTutup.Click
+        Close()
+    End Sub
+
+    Private Sub Database()
+        myConnectionString = "server=127.0.0.1;" _
+            & "uid=mmuslimabdulj;" _
+            & "pwd=Babang_030;" _
+            & "database=visual_basic"
+        Try
+            conn.ConnectionString = myConnectionString
+            conn.Open()
+        Catch ex As MySql.Data.MySqlClient.MySqlException
+            MessageBox.Show(ex.Message)
+        End Try
     End Sub
 
     Private Sub RefreshDGV()
         ' Mendapatkan data terbaru dari database
         Dim sqlSelect As String = "SELECT * FROM penyakitbesar"
         Dim commandSelect As New MySqlCommand(sqlSelect, conn)
-
         Dim adapter As New MySqlDataAdapter(commandSelect)
         Dim dataset As New DataSet()
-
         adapter.Fill(dataset, "DGVPenyakit")
-
         ' Menetapkan sumber data DataGridView dengan data yang baru
         DGVPenyakit.DataSource = dataset.Tables("DGVPenyakit")
-
         ' Refresh DataGridView
         DGVPenyakit.Refresh()
     End Sub
 
-    Private Sub btTutup_Click(sender As Object, e As EventArgs) Handles btTutup.Click
-        Close()
+    Private Sub AddListOfData()
+        listPenyakit.Add("Congestive Heart Failure")
+        listPenyakit.Add("Necrosis of Pulp")
+        listPenyakit.Add("Hyperplasia of Prostate")
+        listICD.Add("150.0")
+        listICD.Add("K04.1")
+        listICD.Add("N40.0")
+        For Each item As String In listICD
+            cbICD.Items.Add(item)
+        Next
     End Sub
 End Class
